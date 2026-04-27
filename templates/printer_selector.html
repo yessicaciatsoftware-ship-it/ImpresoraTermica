@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Impresión - Mina San Miguel</title>
+    <style>
+        /* Variables CSS */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* Reset y base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .header h1 strong {
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        }
+
+        /* Contenido principal */
+        .content {
+            padding: 30px;
+        }
+
+        /* Tarjeta de estado */
+        .status-card {
+            background: var(--light-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .printer-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .current-printer {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .printer-type {
+            font-size: 0.9em;
+            color: #666;
+            padding: 4px 8px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+        }
+
+        .status-dot.connected {
+            background: var(--success-color);
+        }
+
+        /* Secciones */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '📋';
+            font-size: 1.2em;
+        }
+
+        .section-title.actions::before {
+            content: '⚙️';
+        }
+
+        /* Lista de impresoras */
+        .printer-list {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .printer-item {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .printer-item:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .printer-item.selected {
+            border-color: var(--secondary-color);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .printer-details {
+            flex: 1;
+        }
+
+        .printer-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .printer-description {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .printer-status {
+            font-size: 0.8em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #e0e0e0;
+        }
+
+        .printer-status.available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Grid de acciones */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Mensajes de estado */
+        .status-message {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--light-color);
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .status-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .printer-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .section-title {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Estados visuales */
+        .printer-item[data-status="0"] .printer-status {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .printer-item[data-status="1"] .printer-status {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Mejoras de accesibilidad */
+        .btn:focus,
+        .printer-item:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        /* Efectos de profundidad */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><strong>Mina San Miguel</strong> - Sistema de Impresión</h1>
+            <p>Sistema de Carga y Control de Tickets</p>
+        </div>
+
+        <div class="content">
+            <div class="status-card">
+                <div class="printer-info">
+                    <div class="current-printer">
+                        📋 Impresora actual: {{ current_printer or 'No seleccionada' }}
+                    </div>
+                    <div class="printer-type">Tipo: Esperando conexión...</div>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Desconectado</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Impresoras Disponibles</h2>
+                <div class="printer-list" id="printerList">
+                    {% for printer in printers %}
+                    <div class="printer-item" data-name="{{ printer.name }}" data-status="{{ printer.status }}">
+                        <div class="printer-details">
+                            <div class="printer-name">{{ printer.name }}</div>
+                            <div class="printer-description">{{ printer.description }}</div>
+                        </div>
+                        <div class="printer-status">
+                            {% if printer.status == 0 %}Disponible{% else %}Ocupada{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button id="selectButton" class="btn btn-primary" disabled>
+                    ✅ Seleccionar Impresora
+                </button>
+                
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title actions">Acciones del Sistema</h2>
+                <div class="actions-grid">
+                    <button class="btn btn-primary" onclick="testNativo()">
+                        🖨️ Test de Impresion
+                    </button>
+                    <button class="btn btn-warning" onclick="testReceipt()">
+                        📄 Test de Recibo
+                    </button>
+                    <button class="btn btn-danger" onclick="testCut()">
+                        ✂️ Probar Corte
+                    </button>
+                    <button class="btn btn-primary" onclick="checkStatus()">
+                        🔍 Verificar Estado
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshPrinters()">
+                        🔄 Actualizar Lista
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Mina San Miguel - Sistema de Carga Automatizado</p>
+            <p>Versión 1.0 | Confianza y Calidad</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedPrinter = null;
+        let currentStatus = false;
+
+        document.querySelectorAll('.printer-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.printer-item').forEach(i => i.classList.remove('selected'));
+                item.classList.add('selected');
+                selectedPrinter = item.dataset.name;
+                document.getElementById('selectButton').disabled = false;
+            });
+        });
+
+        document.getElementById('selectButton').addEventListener('click', async () => {
+            if (!selectedPrinter) return;
+
+            const button = document.getElementById('selectButton');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> Procesando...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/select-printer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ printer_name: selectedPrinter })
+                });
+
+                const data = await response.json();
+                const statusDiv = document.getElementById('statusMessage');
+                statusDiv.style.display = 'block';
+
+                if (response.ok) {
+                    statusDiv.className = 'status-message status-success';
+                    statusDiv.innerHTML = '✅ ' + data.message;
+                    document.querySelector('.current-printer').textContent = 
+                        '📋 Impresora actual: ' + selectedPrinter;
+                    document.querySelector('.printer-type').textContent = 'Tipo: ' + data.printer_type;
+                    updateStatus(true);
+                } else {
+                    statusDiv.className = 'status-message status-error';
+                    statusDiv.innerHTML = '❌ ' + data.error;
+                }
+
+                setTimeout(() => { 
+                    statusDiv.style.display = 'none'; 
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 3000);
+            } catch (error) {
+                console.error('Error:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+
+        async function testPrint() {
+            showLoading('Test de Impresión');
+            try {
+                const response = await fetch('/test-print');
+                const data = await response.json();
+                showAlert(response.ok, response.ok ? data.message : data.error);
+            } catch (error) {
+                showAlert(false, 'Error: ' + error.message);
+            }
+        }
+        
+        async function testNativo() {
+            showLoading('Test Nativo');
+            try {
+                const response = await fetch('/test-nativo');
+                const data = await response.json();
+                showAlert(response.ok, response.ok ? data.message : data.error);
+            } catch (error) {
+                showAlert(false, 'Error: ' + error.message);
+            }
+        }
+
+        async function testReceipt() {
+            showLoading('Test de Recibo');
+            try {
+                const response = await fetch('/test-receipt');
+                const data = await response.json();
+                showAlert(response.ok, response.ok ? data.message : data.error);
+            } catch (error) {
+                showAlert(false, 'Error: ' + error.message);
+            }
+        }
+
+        async function testCut() {
+            showLoading('Prueba de Corte');
+            try {
+                const response = await fetch('/test-cut');
+                const data = await response.json();
+                showAlert(response.ok, response.ok ? data.message : data.error);
+            } catch (error) {
+                showAlert(false, 'Error: ' + error.message);
+            }
+        }
+
+        async function checkStatus() {
+            showLoading('Verificando Estado');
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                updateStatus(data.printer_connected);
+                showAlert(true, 
+                    `Estado: ${data.printer_connected ? 'Conectado' : 'Desconectado'}
+` +
+                    `Tipo: ${data.printer_type}
+` +
+                    `Seleccionada: ${data.printer_selected ? 'Sí' : 'No'}`
+                );
+            } catch (error) {
+                showAlert(false, 'Error: ' + error.message);
+            }
+        }
+
+        async function refreshPrinters() {
+            showLoading('Actualizando');
+            try {
+                const response = await fetch('/get-printers');
+                const data = await response.json();
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    showAlert(false, 'Error al actualizar: ' + data.error);
+                }
+            } catch (error) {
+                showAlert(false, 'Error: ' + error.message);
+            }
+        }
+
+        function updateStatus(connected) {
+            currentStatus = connected;
+            const statusDot = document.querySelector('.status-dot');
+            const statusText = document.querySelector('.status-indicator span');
+            
+            if (connected) {
+                statusDot.className = 'status-dot connected';
+                statusText.textContent = 'Conectado';
+                statusText.style.color = 'var(--success-color)';
+            } else {
+                statusDot.className = 'status-dot';
+                statusText.textContent = 'Desconectado';
+                statusText.style.color = 'var(--accent-color)';
+            }
+        }
+
+        function showLoading(action) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = 'status-message status-success';
+            statusDiv.innerHTML = '<span class="loading"></span> ' + action + '...';
+            statusDiv.style.display = 'block';
+        }
+
+        function showAlert(success, message) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = success ? 'status-message status-success' : 'status-message status-error';
+            statusDiv.innerHTML = success ? 
+                '✅ ' + message : 
+                '❌ ' + message;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => { 
+                statusDiv.style.display = 'none'; 
+            }, 3000);
+        }
+
+        async function loadPrinters() {
+            try {
+                const response = await fetch('/get-printers');
+                const data = await response.json();
+                if (response.ok && data.current_printer) {
+                    document.querySelector('.current-printer').textContent = 
+                        '📋 Impresora actual: ' + data.current_printer;
+                }
+                
+                const healthResponse = await fetch('/health');
+                const healthData = await healthResponse.json();
+                if (healthResponse.ok) {
+                    updateStatus(healthData.printer_connected);
+                    document.querySelector('.printer-type').textContent = 
+                        'Tipo: ' + (healthData.printer_type || 'No detectado');
+                }
+            } catch (error) {
+                console.error('Error cargando impresoras:', error);
+            }
+        }
+
+        loadPrinters();
+    </script>
+</body>
+</html>
